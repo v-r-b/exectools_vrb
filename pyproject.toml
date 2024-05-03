@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "exectools_vrb"
+version = "0.0.1"
+authors = [
+  { name="volker", email="volker@vrbdev.eu" },
+]
+maintainers = [
+  { name="volker", email="volker@vrbdev.eu" },
+]
+description = "Various tools to execute functions in python"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/v-r-b/exectools_vrb"
