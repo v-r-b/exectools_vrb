@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "exectools_vrb"
-version = "0.0.1"
+dynamic = ["version"]
 authors = [
   { name="volker", email="volker@vrbdev.eu" },
 ]
@@ -25,3 +25,13 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://github.com/v-r-b/exectools_vrb"
+
+[tool.hatch.version]
+path = "./src/exectools_vrb/__version__.py"
+
+[tool.hatch.build]
+exclude = [
+  "/.*",
+  "/docs",
+  "/tests",
+]

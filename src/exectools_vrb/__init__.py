@@ -1,10 +1,35 @@
+"""
+# exectools_vrb
+
+Various tools to execute functions in python.
+
+This module defines:
+
+```function try_run()```
+  
+Exception proof function call. If the call succeeds, return the result of func.
+If not, repeat the call under certain circumstances instead of raising an
+exception immediately. Can be used if exceptions are expected, e.g. TimeoutErrors.
+
+```type TryRunLogFunc```
+  
+Function type for logging exceptions to be used with in try_run(). 
+
+```class TaskOnRequestThread```
+
+Thread class which carries out a task (spefified by a callback
+function) whenever it is requested to do so (by setting a flag).
+There's also a method which will run this task periodically.
+"""
+
 import sys, time, threading, signal, traceback
 from datetime import datetime, timezone
 from functools import partial
 from typing import Any, Callable
 
 TryRunLogFunc = Callable[[str, tuple, dict, int, BaseException], None]
-""" Function type for logging exceptions. Function definitions may be of the form:
+""" Function type for logging exceptions to be used with try_run(). 
+Function definitions may be of the form:
 
 a_log_func(func_name: str, func_args: tuple[Any], func_kwargs: dict[str, Any],
            run_count: int, exc: BaseException) -> None
@@ -16,10 +41,14 @@ Args:
     run_count (int): number of the current execution attempt
     exc (BaseException): exception that has occurred
 """
+
 def try_run(func: Callable, count: int = 2, delay: float = 1.0, *,
             retry_exc_types: list[BaseException.__class__]=[BaseException], 
             logfunc: TryRunLogFunc|None=None) -> Any:
-    """ Call function func. If the call succeeds, return the result of func.
+    """ Exception proof function call. If the call succeeds, return the result of func.
+    If not, repeat the call under certain circumstances instead of raising an
+    exception immediately. Can be used if exceptions are expected, e.g. TimeoutErrors.
+   
     If func has positional and/or keyword arguments, use partial from functools.
 
     Args:
@@ -62,8 +91,6 @@ def try_run(func: Callable, count: int = 2, delay: float = 1.0, *,
     Otherwise: reraise the exception.
 
     If there's any exception at the last try, it will not be caught.
-
-    This e.g. allows retries in case of timeouts when establishing a connection etc.
     """
     # call max. count-1 times (last call at the end of the function)
     for i in range(count-1):
