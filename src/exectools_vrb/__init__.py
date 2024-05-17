@@ -31,12 +31,12 @@ TryRunLogFunc = Callable[[str, tuple, dict, int, BaseException], None]
 """ Function type for logging exceptions to be used with try_run(). 
 Function definitions may be of the form:
 
-a_log_func(func_name: str, func_args: tuple[Any], func_kwargs: dict[str, Any],
+a_log_func(func_name: str, func_args: tuple, func_kwargs: dict,
            run_count: int, exc: BaseException) -> None
 
 Args:
     func_name (str): name of function in which the exception occurred
-    func_args (tuple[Any]): positional arguments to the function called.
+    func_args (tuple): positional arguments to the function called.
     func_kwargs (dict[str, Any]): keyword arguments to the function called
     run_count (int): number of the current execution attempt
     exc (BaseException): exception that has occurred
