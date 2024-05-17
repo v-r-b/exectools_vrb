@@ -3,6 +3,9 @@
 
 Various tools to execute functions in python.
 
+  - On PyPI: https://pypi.org/project/exectools-vrb/
+  - On GitHub: https://github.com/v-r-b/exectools_vrb 
+
 This module defines:
 
 ```function try_run()```
