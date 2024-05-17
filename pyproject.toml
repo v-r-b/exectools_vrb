@@ -25,6 +25,7 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://github.com/v-r-b/exectools_vrb"
+Issues = "https://github.com/v-r-b/exectools_vrb/issues"
 
 [tool.hatch.version]
 path = "./src/exectools_vrb/__version__.py"
