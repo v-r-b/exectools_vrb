@@ -25,10 +25,13 @@ function) whenever it is requested to do so (by setting a flag).
 There's also a method which will run this task periodically.
 """
 
-import sys, time, threading, signal, traceback
+import sys, time, threading, signal, traceback, logging
 from datetime import datetime, timezone
 from functools import partial
-from typing import Any, Callable
+from io import TextIOWrapper
+from typing import Any, Callable, TextIO
+
+logger = logging.getLogger(__name__)
 
 TryRunLogFunc = Callable[[str, tuple, dict, int, BaseException], None]
 """ Function type for logging exceptions to be used with try_run(). 
@@ -141,7 +144,7 @@ class TaskOnRequestThread:
     INFINITE_SECONDS: int = 10**100
     """ "infinite" number of seconds """
 
-    def __init__(self, worker, do_debug: bool = False):
+    def __init__(self, worker, do_debug: bool|int|TextIO|None = None):
         """Constructor. Initializes some internal fields 
         and stores the argument's values. If an external
         callback function (worker argument) with parameters
@@ -154,7 +157,11 @@ class TaskOnRequestThread:
         Args:
             worker (callback function w/o args): external callback function
                         to be used by the thread. It has no arguments (see above).
-            do_debug (bool, optional): If True, print progess information. Defaults to False.
+            do_debug (bool, optional): TextIO to print to, loglevel to use logger
+                        or True to use sys.stdout. None or False: no logging
+
+        For backwards compatibility, do_debug may be set to True (its type was bool until
+        version 0.0.2), which has the same effect as passing sys.stdout as an argument.                        
         """
         # when set to True, the callback function will be called.
         self._run_worker = False
@@ -162,7 +169,12 @@ class TaskOnRequestThread:
         self._do_quit = False
         # callback function to be called
         self._worker = worker
-        # when set to true, progress information will be printed to stdout.
+        # False or None means: NO Logging
+        # True means: write progress information to stdout.
+        # TextIO means: write progress information there
+        # int means: use logger with specified loglevel
+        if do_debug == True:
+            do_debug = sys.stdout
         self._do_debug = do_debug
         # the new thread itself
         self._thread = None
@@ -170,13 +182,19 @@ class TaskOnRequestThread:
         self._thread_ident = 0
 
     def _debug(self, msg: str):
-        """Print a message to stdout, if self._do_debug is True.
+        """Print a message to stdout or to a logger, depending on self._do_debug
 
         Args:
             msg (str): message to print
         """
-        if self._do_debug: 
-            print(msg)
+        if not self._do_debug:
+            return
+        if isinstance(self._do_debug, int):
+            logger.log(self._do_debug, msg)
+        elif isinstance(self._do_debug, TextIO) or isinstance(self._do_debug, TextIOWrapper): 
+            print(msg, file=self._do_debug)
+        else:
+            raise ValueError(f"do_debug must be of type int or TextIO, but is of type {type(self._do_debug)}")
 
     def _internal_worker(self):
         """The function which is run in a separate thread.
