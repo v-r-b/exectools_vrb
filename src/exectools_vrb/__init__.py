@@ -49,7 +49,7 @@ Args:
 """
 
 def try_run(func: Callable, count: int = 2, delay: float = 1.0, *,
-            retry_exc_types: list[BaseException.__class__]=[BaseException], 
+            retry_exc_types: list[type]=[BaseException], 
             logfunc: TryRunLogFunc|None=None) -> Any:
     """ Exception proof function call. If the call succeeds, return the result of func.
     If not, repeat the call under certain circumstances instead of raising an
@@ -62,7 +62,7 @@ def try_run(func: Callable, count: int = 2, delay: float = 1.0, *,
         count (int, optional): max. number of attempts before giving up. 
             If count is less than 1, exactly one call is made. Defaults to 2.
         delay (float, optional): delay in seconds between two calls. Defaults to 1.0 
-        retry_exc_types (list|None, optional): list of "allowed" exception types for a retry. 
+        retry_exc_types (list, optional): list of "allowed" exception types for a retry. 
             Defaults to [BaseException] ( = any exception allowed)
         logfunc (LogFunc|None, optional): log function to log "allowed" errors. e.g. as warnings. Defaults to None.
 
